@@ -158,6 +158,7 @@ contract SupplyChain {
   {
     // Add the new item as part of Harvest
     Item storage item = items[_upc];
+    item.ownerID = _originFarmerID;
     item.originFarmerID = _originFarmerID;
     item.originFarmName = _originFarmName;
     item.originFarmInformation = _originFarmInformation;
@@ -166,8 +167,8 @@ contract SupplyChain {
     item.productNotes = _productNotes;
     item.sku = sku;
     item.upc = _upc;
-    item.itemState = defaultState;
-    item.ownerID = msg.sender;
+    item.productID = sku + _upc;
+    item.itemState = defaultState;    
     
     // Increment sku
     sku = sku + 1;
@@ -212,7 +213,7 @@ contract SupplyChain {
   
   {
     // Update the appropriate fields
-    items[_upc].itemState = State.Packed;
+    items[_upc].itemState = State.ForSale;
     items[_upc].productPrice = _price;
     
     // Emit the appropriate event
@@ -255,7 +256,7 @@ contract SupplyChain {
     items[_upc].itemState = State.Shipped;
     
     // Emit the appropriate event
-    
+    emit Shipped(_upc);
   }
 
   // Define a function 'receiveItem' that allows the retailer to mark an item 'Received'
@@ -345,10 +346,12 @@ contract SupplyChain {
     itemSKU = item.sku;
     itemUPC = item.upc;
     productID = item.productID;
+    productNotes = item.productNotes;
     productPrice = item.productPrice;
     itemState = uint(item.itemState);
     distributorID = item.distributorID;
     retailerID = item.retailerID;
+    consumerID = item.consumerID;
     
   return 
   (
